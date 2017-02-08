@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="toolbar_elevation">4dp</dimen>
+    <dimen name="toolbar_height">56dp</dimen>
+    <dimen name="nav_header_padding">16dp</dimen>
+    <dimen name="nav_header_height">104dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="task_card_item_width">170dp</dimen>
+    <dimen name="task_item_text_size">14sp</dimen>
+    <dimen name="item_task_image_height">120dp</dimen>
+    <dimen name="list_item_padding">8dp</dimen>
+
+    <dimen name="margin_tiny">1dp</dimen>
+    <dimen name="margin_small">8dp</dimen>
+    <dimen name="margin_medium">16dp</dimen>
+    <dimen name="margin_large">32dp</dimen>
+    <dimen name="margin_huge">64dp</dimen>
+
+    <dimen name="spacing_2dp">2dp</dimen>
+
+</resources>

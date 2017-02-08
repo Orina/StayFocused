@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">StayFocused</string>
+    <string name="menu.inbox">Inbox</string>
+    <string name="menu.today">Today</string>
+    <string name="menu.Planned">Plan next</string>
+    <string name="menu.labels">Labels</string>
+    <string name="stay.focused.nav.header">Stay Focused</string>
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
+    <string name="menu.search">Search</string>
+    <string name="menu.change_layout">Change layout</string>
+    <string name="toolbar.inbox">Inbox</string>
+    <string name="toolbar_today">Today</string>
+    <string name="menu.archived">Archived</string>
+    <string name="no_tasks_all">There are no tasks</string>
+    <string name="no_tasks_active">There are no active tasks</string>
+    <string name="no_tasks_completed">There are no completed tasks</string>
+    <string name="no_tasks_label">There are no tasks for selected label</string>
+    <string name="task_addedit_title">Title</string>
+    <string name="task_addedit_description">Description</string>
+</resources>

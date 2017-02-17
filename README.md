@@ -23,7 +23,7 @@ Technical details:
 * TextInputLayout with default animation was used for editing task title and description.
 * DatePickerDialog was used for due date selection.
 
-Persistence: data are stored in Sqlite database.
+Persistence: data is stored in Sqlite database.
 
 <br/>
 

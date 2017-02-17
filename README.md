@@ -26,7 +26,12 @@ The following **optional** features are implemented:
 The following **additional** features are implemented:
 
 * [x] Implemented Model-View-Presenter design pattern
-
+* [x] RecyclerView with StaggeredGridLayoutManager from support library was used for tasks display.
+* [x] Navigation drawer was used for main app menu.
+* [x] Implemented shared element activity transitions.
+* [x] RecyclerView was decorated with swipe-to-dismiss to complete an active task complete or delete an archived one.
+* [x] TextInputLayout with default animation was used for editing task title and description.
+* [x] DatePickerDialog was used for due date selection.
 
 ## Video Walkthrough 
 
@@ -35,10 +40,6 @@ Here's a walkthrough of implemented user stories:
 <img src='https://github.com/Orina/StayFocused/blob/master/advancedTaskList-22.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
-
-## Notes
-
-Describe any challenges encountered while building the app.
 
 ## License
 
@@ -55,35 +56,3 @@ Describe any challenges encountered while building the app.
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
-
-
-This is advanced tasks list android app for codepath.com
-
-Task entry has following fields:
-- title
-- comments
-- completed status
-- due date
-- priority (High or Normal)
-
-User can:
-- create a new task
-- update an existent task
-- change task completion status (active or archived)
-- delete a task
-
-Technical details:
-
-* .
-* RecyclerView with StaggeredGridLayoutManager from support library was used for tasks display.
-* Navigation drawer was used for main app menu.
-* Implemented shared element activity transitions. 
-* RecyclerView was decorated with swipe-to-dismiss to complete an active task complete or delete an archived one.
-* TextInputLayout with default animation was used for editing task title and description.
-* DatePickerDialog was used for due date selection.
-
-Persistence: data is stored in Sqlite database.
-
-<br/>
-
-<img src="" />

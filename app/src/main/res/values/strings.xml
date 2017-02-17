@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">StayFocused</string>
+    <string name="app_name">Advanced Task List</string>
     <string name="menu.inbox">Inbox</string>
     <string name="menu.today">Today</string>
     <string name="menu.Planned">Plan next</string>
@@ -14,8 +14,27 @@
     <string name="menu.archived">Archived</string>
     <string name="no_tasks_all">There are no tasks</string>
     <string name="no_tasks_active">There are no active tasks</string>
-    <string name="no_tasks_completed">There are no completed tasks</string>
+    <string name="no_tasks_completed">There are no archived tasks</string>
     <string name="no_tasks_label">There are no tasks for selected label</string>
     <string name="task_addedit_title">Title</string>
-    <string name="task_addedit_description">Description</string>
+    <string name="task_addedit_description">Notes</string>
+    <string name="menu.addedit_task_delete">Delete</string>
+    <string name="menu_addedit_task_complete">Complete</string>
+    <string name="menu_addedit_task_activate">Activate</string>
+    <string name="not_defined">Not defined</string>
+    <string name="task.due_date">Due date</string>
+    <string name="priority_low">Low</string>
+    <string name="priority_normal">Normal</string>
+    <string name="priority_high">High</string>
+
+    <string name="success_task_created">Task created</string>
+    <string name="success_task_deleted">Task deleted</string>
+    <string name="success_task_completed">Task archived</string>
+    <string name="success_task_saved">Task saved</string>
+    <string name="success_task_activated">Task unarchived</string>
+
+    <string name="menu.test.active">Active tasks</string>
+    <string name="menu.test.archive">Archived tasks</string>
+
+    <string name="button_clear">Clear</string>
 </resources>

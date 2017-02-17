@@ -1,8 +1,9 @@
 package me.elmira.stayfocused.today;
 
+import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -11,14 +12,18 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import me.elmira.stayfocused.Injection;
-import me.elmira.stayfocused.util.ActivityUtils;
 import me.elmira.stayfocused.R;
+import me.elmira.stayfocused.archive.ArchiveActivity;
+import me.elmira.stayfocused.util.ActivityUtils;
 
 public class TodayActivity extends AppCompatActivity {
+
+    public static final String LOG_TAG = "TodayActivity";
 
     private DrawerLayout mDrawerLayout;
     private Toolbar mToolbar;
@@ -26,35 +31,18 @@ public class TodayActivity extends AppCompatActivity {
     private TodayFragment mTasksFragment;
     private NavigationView mNavigationView;
 
-    private boolean changeLayoutMenu = false;
-    private TodayPresenter todayPresenter = null;
+    private TodayPresenter mTodayPresenter = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(LOG_TAG, "onCreate()");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_today);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-        /*mToolbar.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                                       int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                View item = mToolbar.findViewById(R.id.menu_change_layout_id);
-                if (item != null) {
-                    mToolbar.removeOnLayoutChangeListener(this);
-                    item.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            ObjectAnimator animator = ObjectAnimator.ofFloat(v, "rotation", v.getRotation() + 180);
-                            animator.start();
-                        }
-                    });
-                }
-            }
-        });*/
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeButtonEnabled(true);
@@ -63,7 +51,8 @@ public class TodayActivity extends AppCompatActivity {
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.drawer_open, R.string.drawer_close);
 
         mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
-        setupNavigationView();
+        setupDrawerContent();
+        //setupNavigationView();
 
         mTasksFragment = (TodayFragment) getSupportFragmentManager().findFragmentById(R.id.content_frame);
         if (mTasksFragment == null) {
@@ -71,7 +60,7 @@ public class TodayActivity extends AppCompatActivity {
             ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), mTasksFragment, R.id.content_frame);
         }
 
-        todayPresenter = new TodayPresenter(Injection.provideTasksRepository(getApplicationContext()), mTasksFragment);
+        mTodayPresenter = new TodayPresenter(Injection.provideTasksRepository(getApplicationContext()), mTasksFragment);
     }
 
     @Override
@@ -83,12 +72,14 @@ public class TodayActivity extends AppCompatActivity {
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
+        Log.d(LOG_TAG, "onConfigurationChanged()");
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        Log.d(LOG_TAG, "onCreateOptionsMenu()");
         getMenuInflater().inflate(R.menu.menu_today, menu);
         return true;
     }
@@ -103,26 +94,72 @@ public class TodayActivity extends AppCompatActivity {
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 return true;
-            case R.id.menu_change_layout_id:
-                changeLayoutMenu = true;
-                int type = mTasksFragment.changeLayout();
-                if (type == TodayFragment.TASK_LAYOUT_MANAGER_GRID) {
-                    item.setIcon(R.drawable.ic_view_stream_white_24dp);
-                } else if (type == TodayFragment.TASK_LAYOUT_MANAGER_LIST) {
-                    item.setIcon(R.drawable.ic_dashboard_white_24dp);
-                }
-                return true;
         }
-        return super.onOptionsItemSelected(item);
+        return false;
     }
 
-    private void setupNavigationView() {
+
+    @Override
+    protected void onResume() {
+        Log.d(LOG_TAG, "onResume()");
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        Log.d(LOG_TAG, "onPause()");
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d(LOG_TAG, "onStop()");
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.d(LOG_TAG, "onDestroy()");
+        super.onDestroy();
+    }
+
+
+    /*private void setupNavigationView() {
         Menu menu = mNavigationView.getMenu();
         for (int i = 0; i < 4; i++) {
             MenuItem item = menu.add(R.id.labelsGroupId, Menu.NONE, 1, "Label " + i);
             item.setIcon(R.drawable.ic_label_outline_white_24dp);
             item.getIcon().mutate().setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
         }
+    }*/
 
+    private void setupDrawerContent() {
+        mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                return onDrawerNavigationItemSelected(item);
+            }
+        });
+    }
+
+    private boolean onDrawerNavigationItemSelected(MenuItem item) {
+        item.setChecked(true);
+        mDrawerLayout.closeDrawers();
+
+        switch (item.getItemId()) {
+            case R.id.archiveMenuId:
+                startArchiveActivity();
+                return true;
+            case R.id.todayId:
+                Intent intent = new Intent(getApplicationContext(), TodayActivity.class);
+                startActivity(intent);
+                return true;
+        }
+        return false;
+    }
+
+    private void startArchiveActivity() {
+        Intent intent = new Intent(getApplicationContext(), ArchiveActivity.class);
+        startActivity(intent);
     }
 }

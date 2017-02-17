@@ -1,11 +1,13 @@
 package me.elmira.stayfocused.today;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 
 import java.util.List;
 
 import me.elmira.stayfocused.BasePresenter;
 import me.elmira.stayfocused.BaseView;
+import me.elmira.stayfocused.adapter.TaskAdapter;
 import me.elmira.stayfocused.data.Task;
 
 /**
@@ -21,34 +23,27 @@ public interface TodayContract {
 
         void showTasks(List<Task> tasks);
 
-        void showActiveFilter();
-
-        void showCompletedFilter();
-
-        void showAllFilter();
-
-        void showLabelFilter();
-
-        void showNoActiveTasks();
-
-        void showNoCompletedTasks();
-
         void showNoTasks();
 
-        void showNoLabelTasks();
+        void showAddTaskUI();
 
-        void showAddTask();
+        void showTaskDetailsUI(@NonNull String taskId, @NonNull android.view.View view);
 
-        void showTaskDetailsUi(String taskId);
+        void onTaskCreated(@NonNull Task task);
+
+        void onTaskUpdated(@NonNull Task task);
+
+        void onTaskDeleted(@NonNull String taskId);
+
+        void onTaskCompleted(@NonNull String taskId);
     }
 
-    interface Presenter extends BasePresenter {
+    interface Presenter extends BasePresenter, TaskAdapter.OnTaskClickListener, TaskAdapter.OnTaskTouchListener {
 
         void loadTasks(boolean forceUpdate);
 
+        void result(int requestCode, int resultCode, Intent data);
+
         void addNewTask();
-
-        void openTaskDetails(@NonNull Task requestedTask);
-
     }
 }

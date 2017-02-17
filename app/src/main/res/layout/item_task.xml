@@ -15,23 +15,13 @@
         card_view:cardBackgroundColor="@android:color/white"
         card_view:cardCornerRadius="2dp"
         card_view:cardElevation="2dp"
-        card_view:contentPadding="@dimen/spacing_2dp">
+        card_view:contentPadding="@dimen/spacing_2dp"
+        android:transitionName="@string/transition_task">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp">
-
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/item_task_image_height"
-                android:layout_marginEnd="0dp"
-                android:layout_marginStart="0dp"
-                android:layout_marginTop="0dp"
-                card_view:layout_constraintLeft_toLeftOf="parent"
-                card_view:layout_constraintRight_toRightOf="parent"
-                card_view:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/task_title"
@@ -39,11 +29,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="0dp"
                 android:layout_marginStart="0dp"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="0dp"
                 android:textAppearance="@style/StayFocusedTheme.TextAppearance.Title"
-                card_view:layout_constraintLeft_toLeftOf="parent"
-                card_view:layout_constraintRight_toRightOf="parent"
-                card_view:layout_constraintTop_toBottomOf="@+id/imageView" />
+                card_view:layout_constraintStart_toStartOf="parent"
+                card_view:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/task_description"
@@ -51,12 +40,39 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="0dp"
                 android:layout_marginStart="0dp"
-                android:layout_marginTop="4dp"
                 android:textAppearance="@style/StayFocusedTheme.TextAppearance.TaskItem"
-                card_view:layout_constraintRight_toRightOf="parent"
+                card_view:layout_constraintStart_toStartOf="parent"
                 card_view:layout_constraintTop_toBottomOf="@+id/task_title" />
 
-            <HorizontalScrollView
+            <LinearLayout
+                android:id="@+id/due_date_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_horizontal"
+                android:background="@drawable/task_label_rect"
+                android:orientation="horizontal"
+                android:padding="@dimen/margin_tiny"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="4dp"
+                card_view:layout_constraintStart_toStartOf="parent"
+                card_view:layout_constraintTop_toBottomOf="@+id/task_description"
+                android:visibility="visible">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_access_time_white_24dp" />
+
+                <TextView
+                    android:id="@+id/task_due_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:layout_marginEnd="4dp"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"/>
+            </LinearLayout>
+
+            <!--<HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="0dp"
@@ -75,14 +91,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 </LinearLayout>
-            </HorizontalScrollView>
+            </HorizontalScrollView> -->
 
-            <ProgressBar
+            <!--<ProgressBar
                 android:id="@+id/task_progress_bar"
                 style="?android:attr/progressBarStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone" />
+                android:visibility="gone" /> -->
 
         </android.support.constraint.ConstraintLayout>
 

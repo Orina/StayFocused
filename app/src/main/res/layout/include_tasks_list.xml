@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <include layout="@layout/toolbar" />
+        <include layout="@layout/toolbar_today" />
 
     </android.support.design.widget.AppBarLayout>
 
@@ -29,6 +29,6 @@
         android:src="@drawable/ic_add"
         app:fabSize="normal"
         app:layout_anchor="@id/content_frame"
-        app:layout_anchorGravity="bottom|right|end" />
+        app:layout_anchorGravity="bottom|right|end"/>
 
 </android.support.design.widget.CoordinatorLayout>

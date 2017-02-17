@@ -1,5 +1,8 @@
 package me.elmira.stayfocused.addedittask;
 
+import me.elmira.stayfocused.BasePresenter;
+import me.elmira.stayfocused.BaseView;
+import me.elmira.stayfocused.data.Priority;
 import me.elmira.stayfocused.data.Task;
 
 /**
@@ -8,43 +11,47 @@ import me.elmira.stayfocused.data.Task;
 
 public interface AddEditTaskContract {
 
-    interface View {
+    interface View extends BaseView<Presenter> {
 
         void setTitle(String title);
 
         void setDescription(String description);
 
-        void setImage(String filePath);
+        void setDueDate(long time);
 
-        void setDueDate(String date, String time);
+        void setPriority(Priority priority);
 
-        void setPriority();
+        void setCompleteStatus(boolean isCompleted);
 
-        void onLoadPriority();
+        void onCompleteTask(String taskId);
 
-        void onLoadDueDate();
+        void onActivateTask(String taskId);
 
-        void onCompleteTask();
-
-        void onDeleteTask();
+        void onDeleteTask(String taskId);
 
         boolean isActive();
 
-        void onResultBack();
+        void onResultBack(Task task);
+
+        void prepareNewTaskView();
     }
 
-    interface Presenter {
+    interface Presenter extends BasePresenter {
 
-        Task loadTask();
+        void loadTask();
 
-        void saveTaskTitle(String title);
+        Task updateTask(String title, String description, int priority, long dueDate);
 
-        void saveDescription(String description);
-
-        void setDueTime(String dueDate, String dueTime);
-
-        void setPriority(String priority);
+        void deleteTask();
 
         boolean reloadTask();
+
+        void completeTask(String title, String description, int priority, long dueDate);
+
+        void activateTask(String title, String description, int priority, long dueDate);
+
+        boolean isNewTask();
+
+        void onBackButtonPressed(String title, String description, int priority, long dueDate);
     }
 }

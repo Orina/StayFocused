@@ -1,17 +1,19 @@
 package me.elmira.stayfocused.today;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.view.View;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import me.elmira.stayfocused.addedittask.AddEditTaskActivity;
 import me.elmira.stayfocused.data.Task;
+import me.elmira.stayfocused.data.TaskListFilter;
 import me.elmira.stayfocused.data.source.TasksDataSource;
 import me.elmira.stayfocused.data.source.TasksRepository;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static me.elmira.stayfocused.today.TodayTasksFilterType.ACTIVE_TASKS;
-import static me.elmira.stayfocused.today.TodayTasksFilterType.COMPLETED_TASKS;
 
 /**
  * Created by elmira on 1/31/17.
@@ -19,18 +21,17 @@ import static me.elmira.stayfocused.today.TodayTasksFilterType.COMPLETED_TASKS;
 
 public class TodayPresenter implements TodayContract.Presenter {
 
+    private static final String LOG_TAG = "TodayPresenter";
+
     private final TasksRepository mTasksRepository;
 
-    private final TodayContract.View mTodayView;
+    private final TodayContract.View mView;
 
     private boolean mFirstLoad = true;
 
-    private TodayTasksFilterType mCurrentTasksFilter = TodayTasksFilterType.ALL_TASKS;
-
     public TodayPresenter(@NonNull TasksRepository mTasksRepository, @NonNull TodayContract.View mTodayView) {
-        this.mTasksRepository = checkNotNull(mTasksRepository, "tasks repositore can't be null");
-        this.mTodayView = checkNotNull(mTodayView, "task view can not be null");
-
+        this.mTasksRepository = checkNotNull(mTasksRepository, "tasks repository can't be null");
+        this.mView = checkNotNull(mTodayView, "task view can not be null");
         mTodayView.setPresenter(this);
     }
 
@@ -47,102 +48,100 @@ public class TodayPresenter implements TodayContract.Presenter {
 
     private void loadTasks(boolean forceUpdate, final boolean showLoadingUI) {
         if (showLoadingUI) {
-            mTodayView.setLoadingIndicator(true);
+            mView.setLoadingIndicator(true);
         }
         if (forceUpdate) {
             mTasksRepository.refreshTasks();
         }
+
+        TaskListFilter filter = new TaskListFilter.Builder().completed(false).build();
         mTasksRepository.loadTasks(new TasksDataSource.LoadTasksCallback() {
             @Override
             public void onTasksLoaded(List<Task> tasks) {
                 // The view may not be able to handle UI updates anymore
-                if (!mTodayView.isActive()) return;
+                if (!mView.isActive()) return;
 
-                List<Task> tasksToShow = new ArrayList<Task>();
-
-                if (mCurrentTasksFilter == TodayTasksFilterType.ALL_TASKS) {
-                    tasksToShow.addAll(tasks);
-                } else if (mCurrentTasksFilter == ACTIVE_TASKS) {
-                    for (Task task : tasks) {
-                        if (task.isActive()) tasksToShow.add(task);
-                    }
-                } else if (mCurrentTasksFilter == COMPLETED_TASKS) {
-                    for (Task task : tasks) {
-                        if (task.isCompleted()) tasksToShow.add(task);
-                    }
-                } else if (mCurrentTasksFilter == TodayTasksFilterType.LABEL_TASKS) {
-                    for (Task task : tasks) {
-                        if (task.hasLabel(mCurrentTasksFilter.getLabelId())) tasksToShow.add(task);
-                    }
-                }
                 if (showLoadingUI) {
-                    mTodayView.setLoadingIndicator(false);
+                    mView.setLoadingIndicator(false);
                 }
-                processTasks(tasksToShow);
+                processTasks(tasks);
             }
 
             @Override
             public void onDataNotAvailable() {
-                if (mTodayView.isActive()) return;
+                if (mView.isActive()) return;
                 processEmptyTasks();
             }
-        });
+        }, filter);
     }
-
 
     @Override
     public void addNewTask() {
-
+        mView.showAddTaskUI();
     }
 
     @Override
-    public void openTaskDetails(@NonNull Task requestedTask) {
+    public void result(int requestCode, int resultCode, Intent data) {
+        if (resultCode != Activity.RESULT_OK) return;
 
-    }
+        if (AddEditTaskActivity.REQUEST_ADD_TASK == requestCode) {
+            Task task = (Task) data.getSerializableExtra(AddEditTaskActivity.EXTRA_TASK);
+            if (task != null) {
+                //mTasksRepository.updateCachedTask(task);
+                mView.onTaskCreated(task);
+            }
+        }
+        else if (AddEditTaskActivity.REQUEST_EDIT_TASK == requestCode) {
+            int extraAction = data.getIntExtra(AddEditTaskActivity.EXTRA_ACTION, 0);
 
-    private void processTasks(List<Task> tasks) {
-        if (tasks.isEmpty()) {
-            // Show a message indicating there are no tasks for that filter type.
-            processEmptyTasks();
-        } else {
-            // Show the list of tasks
-            mTodayView.showTasks(tasks);
-            // Set the filter label's text.
-            showFilterLabel();
+            if (extraAction == AddEditTaskActivity.EXTRA_DELETED_TASK) {
+                String taskId = data.getStringExtra(AddEditTaskActivity.EXTRA_TASK_ID);
+                if (taskId != null) {
+                    //mTasksRepository.removeCachedTask(taskId);
+                    mView.onTaskDeleted(taskId);
+                }
+            }
+            else if (extraAction == AddEditTaskActivity.EXTRA_COMPLETED_TASK) {
+                String taskId = data.getStringExtra(AddEditTaskActivity.EXTRA_TASK_ID);
+                if (taskId != null) {
+                    //mTasksRepository.updateCachedTask(task);
+                    mView.onTaskCompleted(taskId);
+                }
+            }
+            else if (extraAction == AddEditTaskActivity.EXTRA_UPDATED_TASK) {
+                Task task = (Task) data.getSerializableExtra(AddEditTaskActivity.EXTRA_TASK);
+                if (task != null) {
+                    //mTasksRepository.updateCachedTask(task);
+                    mView.onTaskUpdated(task);
+                }
+            }
         }
     }
 
-    private void showFilterLabel() {
-        switch (mCurrentTasksFilter) {
-            case ACTIVE_TASKS:
-                mTodayView.showActiveFilter();
-                break;
-            case COMPLETED_TASKS:
-                mTodayView.showCompletedFilter();
-                break;
-            case LABEL_TASKS:
-                mTodayView.showLabelFilter();
-                break;
-            default:
-                mTodayView.showAllFilter();
-                break;
+    @Override
+    public void onTaskClick(Task task, View cardView) {
+        mView.showTaskDetailsUI(task.getId(), cardView);
+    }
+
+    @Override
+    public void onTaskDismiss(Task task) {
+        mTasksRepository.completeTask(task.getId());
+        mView.onTaskCompleted(task.getId());
+    }
+
+    private void processTasks(List<Task> tasks) {
+        if (!mView.isActive()) return;
+        if (tasks.isEmpty()) {
+            // Show a message indicating there are no tasks for that filter type.
+            processEmptyTasks();
+        }
+        else {
+            // Show the list of tasks
+            mView.showTasks(tasks);
         }
     }
 
     private void processEmptyTasks() {
-        switch (mCurrentTasksFilter) {
-            case ACTIVE_TASKS:
-                mTodayView.showNoActiveTasks();
-                break;
-            case COMPLETED_TASKS:
-                mTodayView.showNoCompletedTasks();
-                break;
-            case LABEL_TASKS:
-                mTodayView.showNoLabelTasks();
-                break;
-            default:
-                mTodayView.showNoTasks();
-                break;
-        }
+        mView.showNoTasks();
     }
 }

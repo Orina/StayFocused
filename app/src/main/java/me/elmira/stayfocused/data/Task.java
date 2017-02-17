@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,44 +13,88 @@ import java.util.UUID;
  * Created by elmira on 1/19/17.
  */
 
-public class Task {
+public class Task implements Serializable {
 
     @NonNull
     private final String mId;
 
-    @NonNull
     private final String mTitle;
 
-    @NonNull
     private final String mDescription;
 
     private final boolean mCompleted;
 
-    private final int mProgress;
-
-    public List<Label> mLabels;
+    private List<Label> mLabels;
 
     private final Priority mPriority;
+    private final int mPriorityId;
 
-    public String mImageRes = null;
+    private final long mDueDate;
 
-    public Task(@NonNull String mTitle, @NonNull String mDescription) {
-        this(UUID.randomUUID().toString(), mTitle, mDescription, false, 0, null, null, null);
+    public static class Builder {
+        private String mId;
+        private String mTitle;
+        private String mDescription;
+        private boolean mCompleted;
+        public List<Label> mLabels;
+        private int mPriorityId;
+        private long mDueDate = 0;
+
+        public Builder() {
+            this.mId = UUID.randomUUID().toString();
+        }
+
+        public Builder(String id) {
+            this.mId = id;
+        }
+
+        public Builder(Task task) {
+            this.mId = task.getId();
+            this.mTitle = task.getTitle();
+            this.mDescription = task.getDescription();
+            this.mDueDate = task.getDueDate();
+            this.mPriorityId = task.getPriorityId();
+            this.mCompleted = task.isCompleted();
+        }
+
+        public Builder title(String title) {
+            this.mTitle = title == null ? null : title.trim();
+            return this;
+        }
+
+        public Builder description(String description) {
+            this.mDescription = description == null ? null : description.trim();
+            return this;
+        }
+
+        public Builder dueDate(long dueDate) {
+            this.mDueDate = dueDate;
+            return this;
+        }
+
+        public Builder priority(int priority) {
+            this.mPriorityId = priority;
+            return this;
+        }
+
+        public Builder completed(boolean completed) {
+            this.mCompleted = completed;
+            return this;
+        }
+
+        public Task build() {
+            return new Task(mId, mTitle, mDescription, mCompleted, mPriorityId, mDueDate);
+        }
     }
 
-    public Task(@NonNull String title, @NonNull String description, boolean completed, int progress) {
-        this(UUID.randomUUID().toString(), title, description, completed, progress, null, null, null);
-    }
-
-    public Task(@NonNull String id, @NonNull String title, @NonNull String description, boolean completed, int progress, List<Label> labels, Priority priority, String imageRes) {
+    private Task(@NonNull String id, String title, String description, boolean completed, int priorityId, long dueDate) {
         this.mId = id;
         this.mTitle = title;
         this.mDescription = description;
+        this.mPriorityId = priorityId;
+        this.mPriority = Priority.getById(priorityId);
+        this.mDueDate = dueDate;
         this.mCompleted = completed;
-        this.mProgress = progress;
-        this.mLabels = labels;
-        this.mPriority = priority;
-        this.mImageRes = imageRes;
     }
 
     @NonNull
@@ -67,10 +112,6 @@ public class Task {
         return mDescription;
     }
 
-    public int getProgress() {
-        return mProgress;
-    }
-
     public boolean isCompleted() {
         return mCompleted;
     }
@@ -84,12 +125,16 @@ public class Task {
                 Strings.isNullOrEmpty(mDescription);
     }
 
-    public boolean hasImage() {
-        return mImageRes != null;
+    public long getDueDate() {
+        return mDueDate;
     }
 
     public Priority getPriority() {
         return mPriority;
+    }
+
+    public int getPriorityId() {
+        return mPriorityId;
     }
 
     public List<Label> getLabels() {
@@ -111,14 +156,24 @@ public class Task {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return Objects.equal(mId, task.mId) &&
-                Objects.equal(mTitle, task.mTitle) &&
-                Objects.equal(mDescription, task.mDescription);
+        return Objects.equal(mId, task.mId);
+    }
+
+    public boolean fullEquals(Task task) {
+        if (mCompleted != task.mCompleted) return false;
+        if (mPriorityId != task.mPriorityId) return false;
+        if (mDueDate != task.mDueDate) return false;
+        if (!mId.equals(task.mId)) return false;
+        if (!mTitle.equals(task.mTitle)) return false;
+        if (!mDescription.equals(task.mDescription)) return false;
+        if (mLabels != null ? !mLabels.equals(task.mLabels) : task.mLabels != null) return false;
+        return mPriority == task.mPriority;
+
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(mId, mTitle, mDescription);
+        return Objects.hashCode(mId);
     }
 
     @Override

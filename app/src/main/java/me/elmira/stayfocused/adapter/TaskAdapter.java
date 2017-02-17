@@ -2,37 +2,42 @@ package me.elmira.stayfocused.adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.PorterDuff;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-
-import com.google.common.base.Strings;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import me.elmira.stayfocused.R;
-import me.elmira.stayfocused.data.Priority;
 import me.elmira.stayfocused.data.Task;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Created by elmira on 1/19/17.
  */
 
-public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
+public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder> implements TaskTouchHelperAdapter {
 
     private final LayoutInflater mLayoutInflater;
     private List<Task> mTasks;
 
     private WeakReference<Context> mContext;
+    private OnTaskClickListener mTaskClickListener;
+    private OnTaskTouchListener mTaskTouchListener;
 
+    public interface OnTaskClickListener {
+        void onTaskClick(Task task, View cardView);
+    }
+
+    public interface OnTaskTouchListener {
+        void onTaskDismiss(Task task);
+    }
 
     public TaskAdapter(Activity activity) {
         mLayoutInflater = LayoutInflater.from(activity.getApplicationContext());
@@ -40,9 +45,28 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
         mTasks = new ArrayList<>();
     }
 
+    public void setClickListener(OnTaskClickListener listener) {
+        this.mTaskClickListener = listener;
+    }
+
+    public void setTouchListener(OnTaskTouchListener mTaskTouchListener) {
+        this.mTaskTouchListener = mTaskTouchListener;
+    }
+
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ViewHolder(mLayoutInflater.inflate(R.layout.item_task, parent, false));
+    public TaskViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new TaskViewHolder(mLayoutInflater.inflate(R.layout.item_task, parent, false));
+    }
+
+    @Override
+    public void onBindViewHolder(TaskViewHolder holder, int position) {
+        Task task = mTasks.get(position);
+        holder.bind(mContext.get(), task, mTaskClickListener);
+    }
+
+    @Override
+    public int getItemCount() {
+        return mTasks == null ? 0 : mTasks.size();
     }
 
     public void updateData(List<Task> tasks) {
@@ -51,64 +75,65 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
         notifyDataSetChanged();
     }
 
-    @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        Task task = mTasks.get(position);
+    public void removeTask(@NonNull String taskId) {
+        checkNotNull(taskId);
+        for (int i = 0; i < mTasks.size(); i++) {
+            Task task = mTasks.get(i);
+            if (taskId.equals(task.getId())) {
+                remove(i);
+                break;
+            }
+        }
+    }
 
-        if (task.hasImage()) {
-            holder.imageView.setVisibility(View.VISIBLE);
-            holder.imageView.setImageDrawable(mContext.get().getDrawable(R.drawable.icon_category_food_raster));
-        } else {
-            holder.imageView.setVisibility(View.GONE);
+    public void addTask(@NonNull Task task) {
+        checkNotNull(task);
+        int position = 0;
+        mTasks.add(position, task);
+        notifyItemInserted(position);
+    }
+
+    public void updateTask(@NonNull Task task) {
+        checkNotNull(task);
+        for (int i = 0; i < mTasks.size(); i++) {
+            Task tmp = mTasks.get(i);
+            if (tmp.getId().equals(task.getId())) {
+                update(i, task);
+                break;
+            }
         }
-        if (Strings.isNullOrEmpty(task.getTitle())) {
-            holder.titleView.setText(task.getDescription().substring(0, Math.min(30, task.getDescription().length())));
-        } else {
-            holder.titleView.setText(task.getTitle());
-        }
-        if (Strings.isNullOrEmpty(task.getDescription())) {
-            holder.descView.setVisibility(View.GONE);
-        } else {
-            holder.descView.setVisibility(View.VISIBLE);
-            holder.descView.setText(task.getDescription());
-        }
-        if (task.getPriority() == Priority.HIGH) {
-            holder.priorityIcon.setVisibility(View.VISIBLE);
-            holder.priorityIcon.getDrawable().mutate().setColorFilter(mContext.get().getResources().getColor(R.color.colorAccentLight), PorterDuff.Mode.SRC_IN);
-        }
-        if (task.getLabels() != null && task.getLabels().size() > 0) {
-            holder.mTaskLabelAdapter.setLabels(task.getLabels());
-            holder.labelsListView.setVisibility(View.VISIBLE);
-        } else holder.labelsListView.setVisibility(View.GONE);
     }
 
     @Override
-    public int getItemCount() {
-        return mTasks == null ? 0 : mTasks.size();
+    public void onItemMove(int fromPosition, int toPosition) {
+        if (fromPosition < toPosition) {
+            for (int i = fromPosition; i < toPosition; i++) {
+                Collections.swap(mTasks, i, i + 1);
+            }
+        }
+        else {
+            for (int i = fromPosition; i > toPosition; i--) {
+                Collections.swap(mTasks, i, i - 1);
+            }
+        }
+        notifyItemMoved(fromPosition, toPosition);
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
-        final TextView titleView;
-        final TextView descView;
-        final ImageView imageView;
-        final ProgressBar progressView;
-        final ImageView priorityIcon;
-        final ListView labelsListView;
-        private TaskLabelAdapter mTaskLabelAdapter;
-
-        public ViewHolder(View container) {
-            super(container);
-
-            View cardView = container.findViewById(R.id.card_view);
-            titleView = (TextView) cardView.findViewById(R.id.task_title);
-            descView = (TextView) cardView.findViewById(R.id.task_description);
-            progressView = (ProgressBar) cardView.findViewById(R.id.task_progress_bar);
-            imageView = (ImageView) cardView.findViewById(R.id.imageView);
-            priorityIcon = (ImageView) container.findViewById(R.id.priorityIcon);
-
-            labelsListView = (ListView) cardView.findViewById(R.id.labelsList);
-            mTaskLabelAdapter = new TaskLabelAdapter();
-            labelsListView.setAdapter(mTaskLabelAdapter);
+    @Override
+    public void onItemDismiss(int position) {
+        if (position < 0 || position >= mTasks.size()) return;
+        if (mTaskTouchListener != null) {
+            mTaskTouchListener.onTaskDismiss(mTasks.get(position));
         }
+    }
+
+    private void remove(int position) {
+        mTasks.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    private void update(int position, Task task) {
+        mTasks.set(position, task);
+        notifyItemChanged(position);
     }
 }

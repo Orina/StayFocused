@@ -2,7 +2,10 @@
 
     <!-- Base application theme. -->
 
-    <style name="StayFocusedTheme" parent="StayFocusedTheme.Base"/>
+    <style name="StayFocusedTheme" parent="StayFocusedTheme.Base">
+        <item name="android:textColorPrimary">@color/colorPrimaryDark</item>
+        <item name="android:windowContentTransitions">true</item>
+    </style>
 
     <style name="StayFocusedTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
@@ -35,4 +38,31 @@
     <style name="StayFocusedTheme.TextAppearance.Title.Inverse" parent="TextAppearance.AppCompat.Title">
         <item name="android:textColor">@android:color/white</item>
     </style>
+
+    <!--Floating label text style-->
+    <style name="StayFocusedTheme.TextAppearance.HintText" parent="TextAppearance.AppCompat.Small">
+        <item name="android:textColor">@color/colorAccentLight</item>
+    </style>
+
+    <!--Input field style-->
+    <style name="StayFocusedTheme.TextAppearance.EditText" parent="Theme.AppCompat.Light">
+        <item name="colorControlNormal">@color/colorPrimaryVeryLight</item>
+        <item name="colorControlActivated">@color/colorAccentLight</item>
+        <item name="colorControlHighlight">@color/colorAccentLight</item>
+    </style>
+
+    <style name="StayFocusedTheme.DialogPicker" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorControlNormal">@android:color/white</item>
+        <item name="colorControlActivated">@color/colorAccent</item>
+        <item name="textColorAlertDialogListItem">@android:color/white</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:windowBackground">@drawable/background_date_picker_dialog</item>
+    </style>
+
+    <style name="ToolbarStyle" parent="@style/ThemeOverlay.AppCompat.ActionBar">
+        <!-- THIS is where you can color the arrow! -->
+        <item name="colorControlNormal">@android:color/white</item>
+    </style>
+
 </resources>

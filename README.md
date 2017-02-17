@@ -9,19 +9,19 @@ Task entry has following fields:
 
 User can:
 - create a new task
-- update existent task
+- update an existent task
 - change task completion status (active or archived)
-- delete task
+- delete a task
 
 Technical details:
 
-* It was attempt to implement Model-View-Presenter design pattern.
-* For task displaying the RecyclerView from support library was used with StaggeredGridLayoutManager
-* Use a navigation drawer
-* use shared element activity transitions 
-* decorate RecyclerView with swipe-to-dismiss for make an active  task complete or delete archived tasks
-* use TextInputLayout with default animation for editing task title and description
-* use DatePickerDialog for due date selection
+* Implemented Model-View-Presenter design pattern.
+* RecyclerView with StaggeredGridLayoutManager from support library was used for tasks display.
+* Navigation drawer was used for main app menu.
+* Implemented shared element activity transitions. 
+* RecyclerView was decorated with swipe-to-dismiss to complete an active task complete or delete an archived one.
+* TextInputLayout with default animation was used for editing task title and description.
+* DatePickerDialog was used for due date selection.
 
 Persistence: data are stored in Sqlite database.
 

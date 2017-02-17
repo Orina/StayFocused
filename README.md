@@ -15,12 +15,16 @@ User can:
 
 Technical details:
 
-It was attempt to implement Model-View-Presenter design pattern.
-For task displaying the RecyclerView from support library was used with StaggeredGridLayoutManager
-Use a navigation drawer
-use shared element activity transitions 
-decorate RecyclerView with swipe-to-dismiss for make an active  task complete or delete archived tasks
-use TextInputLayout with default animation for editing task title and description
-use DatePickerDialog for due date selection
+* It was attempt to implement Model-View-Presenter design pattern.
+* For task displaying the RecyclerView from support library was used with StaggeredGridLayoutManager
+* Use a navigation drawer
+* use shared element activity transitions 
+* decorate RecyclerView with swipe-to-dismiss for make an active  task complete or delete archived tasks
+* use TextInputLayout with default animation for editing task title and description
+* use DatePickerDialog for due date selection
 
 Persistence: data are stored in Sqlite database.
+
+<br/>
+
+<img src="https://github.com/Orina/StayFocused/blob/master/advancedTaskList-22.gif" />
